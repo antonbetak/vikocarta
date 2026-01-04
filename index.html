@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Para ti 🤍</title>
+
+<style>
+:root{
+  --mint:#c9f5dc;
+  --mint2:#eafff3;
+  --text:#173b2b;
+  --stroke:rgba(23,59,43,.15);
+  --card:rgba(255,255,255,.75);
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  background:
+    radial-gradient(circle at top, var(--mint), transparent 55%),
+    linear-gradient(180deg, #ffffff, var(--mint2));
+  color:var(--text);
+  overflow:hidden;
+}
+
+/* Corazones */
+.hearts{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+}
+.heart{
+  position:absolute;
+  width:14px;
+  height:14px;
+  background:rgba(167,238,203,.6);
+  transform:rotate(45deg);
+  animation:float 8s linear infinite;
+}
+.heart::before,.heart::after{
+  content:"";
+  position:absolute;
+  width:14px;
+  height:14px;
+  background:inherit;
+  border-radius:50%;
+}
+.heart::before{left:-7px}
+.heart::after{top:-7px}
+
+@keyframes float{
+  from{transform:translateY(110vh) rotate(45deg);opacity:0}
+  10%{opacity:1}
+  to{transform:translateY(-20vh) rotate(45deg);opacity:0}
+}
+
+/* Card */
+.card{
+  width:100%;
+  max-width:420px;
+  margin:16px;
+  background:var(--card);
+  border:1px solid var(--stroke);
+  border-radius:28px;
+  padding:20px;
+  box-shadow:0 25px 60px rgba(0,0,0,.15);
+  backdrop-filter: blur(10px);
+}
+
+/* Text */
+.pill{
+  display:inline-flex;
+  gap:8px;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background:white;
+  font-size:13px;
+}
+
+h1{
+  margin:16px 0 8px;
+  font-size:26px;
+}
+
+.subtitle{
+  font-size:15px;
+  color:#4a6f5d;
+}
+
+/* Caja fuerte */
+.safeTop{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.safeDots{
+  display:flex;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background:white;
+}
+
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:rgba(0,0,0,.15);
+}
+.dot.filled{
+  background:var(--text);
+}
+
+.keypad{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.key{
+  padding:18px 0;
+  font-size:22px;
+  font-weight:700;
+  border-radius:20px;
+  border:1px solid var(--stroke);
+  background:white;
+  color:var(--text);
+  box-shadow:0 8px 20px rgba(0,0,0,.08);
+}
+
+.key:active{
+  transform:scale(.95);
+}
+
+.key.ok{
+  background:linear-gradient(135deg,#a7eecb,#d8ffe8);
+}
+
+.key.clear{
+  background:#f1f5f3;
+}
+
+/* Error */
+.error{
+  display:none;
+  margin-top:12px;
+  padding:10px;
+  border-radius:14px;
+  background:#ffeaea;
+  color:#7a1f1f;
+  font-size:14px;
+}
+
+/* Carta */
+#letter{display:none}
+
+.paper{
+  margin-top:14px;
+  background:white;
+  padding:18px;
+  border-radius:22px;
+  line-height:1.7;
+  font-size:16px;
+  min-height:200px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="card">
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="pill">🤍 </div>
+  <h1></h1>
+  <p class="subtitle">Marca el código, es el dia de nuestro primer mensaje seguido del mes</p>
+
+  <div class="safeTop">
+    <strong>🔒 Código</strong>
+    <div class="safeDots">
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+  <div class="keypad">
+    <button class="key">1</button>
+    <button class="key">2</button>
+    <button class="key">3</button>
+    <button class="key">4</button>
+    <button class="key">5</button>
+    <button class="key">6</button>
+    <button class="key">7</button>
+    <button class="key">8</button>
+    <button class="key">9</button>
+    <button class="key clear">C</button>
+    <button class="key">0</button>
+    <button class="key ok">OK</button>
+  </div>
+
+  <div class="error" id="error">Código incorrecto 💚</div>
+</div>
+
+<!-- CARTA -->
+<div id="letter">
+  <div class="pill">💌 Carta privada</div>
+  <h1>Para ti 🤍</h1>
+  <div class="paper" id="paper"></div>
+</div>
+
+</div>
+
+<script>
+/* Corazones */
+const hearts = document.getElementById("hearts");
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=6+Math.random()*6+"s";
+  hearts.appendChild(h);
+  setTimeout(()=>h.remove(),12000);
+},700);
+
+/* Caja fuerte */
+const PASSWORD="1611";
+let input="";
+const dots=document.querySelectorAll(".dot");
+const keys=document.querySelectorAll(".key");
+const error=document.getElementById("error");
+
+keys.forEach(k=>{
+  k.onclick=()=>{
+    const v=k.textContent;
+    if(v==="C"){input="";update();return;}
+    if(v==="OK"){
+      if(input===PASSWORD) openLetter();
+      else{error.style.display="block";input="";update();}
+      return;
+    }
+    if(input.length<4){input+=v;update();}
+  };
+});
+
+function update(){
+  dots.forEach((d,i)=>d.classList.toggle("filled",i<input.length));
+  error.style.display="none";
+}
+
+/* Carta con escritura */
+const text=`Hola corazón…
+
+No sé en que momento caí tan enamorado de ti,
+pero me encanta que existas en mi vida para hacerme tan feliz.
+
+Eres una persona que admiro con todo mi ser,
+y una persona que tiene tantas cosas buenas y tan bonitas que me encantan.
+
+Nunca olvides que llegaste a mi vida a hacerme muy feliz,
+incluso en los días donde no lo notas, me haces muy feliz.
+
+te adoro, Anton 🤍`;
+
+function openLetter(){
+  document.getElementById("login").style.display="none";
+  document.getElementById("letter").style.display="block";
+  typeWriter(text);
+}
+
+function typeWriter(t){
+  const el=document.getElementById("paper");
+  el.textContent="";
+  let i=0;
+  const timer=setInterval(()=>{
+    el.textContent+=t[i];
+    i++;
+    if(i>=t.length) clearInterval(timer);
+  },30);
+}
+</script>
+
+</body>
+</html>
